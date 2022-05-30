@@ -6,6 +6,7 @@ import cv2
 
 from bot import RiseOnlineBot, BotState
 from detection import Detection
+from objectDetection import ObjectDetection
 from vision import Vision
 from windowcapture import WindowCapture
 
@@ -22,6 +23,9 @@ detector = Detection('cascade/cascade.xml')
 
 # Loads an empty vision class.
 vision_object = Vision()
+
+# Initializes the object detection
+object_detection = ObjectDetection()
 
 # Initializes the bot object.
 bot = RiseOnlineBot((window_capture.offset_x, window_capture.offset_y), (window_capture.w, window_capture.h))
@@ -42,7 +46,7 @@ while True:
 
     # # Gives the detector the current screenshot to search for objects in.
     detector.update(window_capture.screenshot)
-    #
+
     # Update the bot with the data it needs right now.
     if bot.state == BotState.INITIALIZING:
         # While bot is waiting to start, go ahead and start giving it some targets to work
@@ -67,7 +71,7 @@ while True:
         # Draws the detection results onto the original image.
         # detection_image = vision_object.draw_rectangles(window_capture.screenshot, detector.rectangles)
 
-        rectangles = vision_object.find_character_info(window_capture.screenshot)
+        rectangles = object_detection.find_character_info(window_capture.screenshot)
         positions = vision_object.get_click_points(rectangles)
 
         detection_image = vision_object.draw_rectangles(window_capture.screenshot, rectangles)

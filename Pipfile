@@ -9,6 +9,7 @@ pillow = "==9.1.1"
 opencv-python = "==4.5.5.64"
 pypiwin32 = "==223"
 pywin32 = "==304"
+pytesseract = "*"
 
 [dev-packages]
 
