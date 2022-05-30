@@ -3,6 +3,14 @@ import numpy as np
 
 
 class Vision:
+    character_info = None
+    character_info_w = 0
+    character_info_h = 0
+
+    def __init__(self):
+        self.character_info = cv.imread('character_info.jpg', cv.IMREAD_UNCHANGED)
+        self.character_info_w = self.character_info.shape[1]
+        self.character_info_h = self.character_info.shape[0]
 
     # given a list of [x, y, w, h] rectangles returned by find(), convert those into a list of
     # [x, y] positions in the center of those rectangles where we can click on those found items
@@ -54,3 +62,29 @@ class Vision:
         sum_x = np.sum(point_list[:, 0])
         sum_y = np.sum(point_list[:, 1])
         return [np.floor_divide(sum_x, length), np.floor_divide(sum_y, length)]
+
+    def find_character_info(self, screenshot):
+        result = cv.matchTemplate(screenshot, self.character_info, cv.TM_CCOEFF_NORMED)
+
+        locations = np.where(result == np.max(result))
+        locations = list(zip(*locations[::-1]))
+        print('locs', locations)
+
+        if not locations:
+            print('No location found for the character info bar.')
+            return np.array([], dtype=np.int32).reshape(0, 4)
+
+        rectangles = []
+        for loc in locations:
+            rect = [int(loc[0]), int(loc[1]), self.character_info_w, self.character_info_h]
+            # Add every box to the list twice in order to retain single (non-overlapping) boxes
+            rectangles.append(rect)
+            rectangles.append(rect)
+        # Apply group rectangles.
+        # The groupThreshold parameter should usually be 1. If you put it at 0 then no grouping is
+        # done. If you put it at 2 then an object needs at least 3 overlapping rectangles to appear
+        # in the result. I've set eps to 0.5, which is:
+        # "Relative difference between sides of the rectangles to merge them into a group."
+        rectangles, weights = cv.groupRectangles(rectangles, groupThreshold=1, eps=0.5)
+
+        return rectangles

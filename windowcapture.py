@@ -36,18 +36,20 @@ class WindowCapture:
 
         # get the window size
         window_rect = win32gui.GetWindowRect(self.hwnd)
-        self.w = window_rect[2] - window_rect[0]
-        self.h = window_rect[3] - window_rect[1]
+        # self.w = window_rect[2] - window_rect[0]
+        # self.h = window_rect[3] - window_rect[1]
+        self.w = 1920 - window_rect[0]
+        self.h = 1080 - window_rect[1]
 
         # account for the window border and titlebar and cut them off
         border_pixels = 8
-        titlebar_pixels = 30
+        titlebar_pixels = 35
         self.w = self.w - (border_pixels * 2)
         self.h = self.h - titlebar_pixels - border_pixels
         self.cropped_x = border_pixels
         self.cropped_y = titlebar_pixels
 
-        # set the cropped coordinates offset so we can translate screenshot
+        # set the cropped coordinates offset, so we can translate screenshot
         # images into actual screen positions
         self.offset_x = window_rect[0] + self.cropped_x
         self.offset_y = window_rect[1] + self.cropped_y

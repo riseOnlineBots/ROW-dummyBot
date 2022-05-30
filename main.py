@@ -1,5 +1,6 @@
 # import os
 import os
+from time import time
 
 import cv2
 
@@ -7,9 +8,8 @@ from bot import RiseOnlineBot, BotState
 from detection import Detection
 from vision import Vision
 from windowcapture import WindowCapture
-from time import time
 
-DEBUG = False
+DEBUG = True
 
 # Changes the directory portion.
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -27,8 +27,8 @@ vision_object = Vision()
 bot = RiseOnlineBot((window_capture.offset_x, window_capture.offset_y), (window_capture.w, window_capture.h))
 
 window_capture.start()
-detector.start()
-bot.start()
+# detector.start()
+# bot.start()
 
 loop_time = time()
 
@@ -65,24 +65,30 @@ while True:
 
     if DEBUG:
         # Draws the detection results onto the original image.
-        detection_image = vision_object.draw_rectangles(window_capture.screenshot, detector.rectangles)
+        # detection_image = vision_object.draw_rectangles(window_capture.screenshot, detector.rectangles)
+
+        rectangles = vision_object.find_character_info(window_capture.screenshot)
+        positions = vision_object.get_click_points(rectangles)
+
+        detection_image = vision_object.draw_rectangles(window_capture.screenshot, rectangles)
 
         # Displays the image.
         cv2.imshow('Matches', window_capture.screenshot)
 
-    key = cv2.waitKey(1) & 0xFF  # Waits 1ms every loop to process key presses.
     loop_time = time()
+    key = cv2.waitKey(1) & 0xFF  # Waits 1ms every loop to process key presses.
+
     if key == ord('z'):
         window_capture.stop()
         detector.stop()
         bot.stop()
         cv2.destroyAllWindows()
         break
-    # elif key == ord('f'):
-    #     cv2.imwrite('copperMines/positive/{}.jpg'.format(loop_time), window_capture.screenshot)
-    #     print('Screenshot taken.')
-    # elif key == ord('d'):
-    #     cv2.imwrite('copperMines/negative/{}.jpg'.format(loop_time), window_capture.screenshot)
-    #     print('Screenshot taken.')
+    elif key == ord('f'):
+        cv2.imwrite('copperMines/positive/{}.jpg'.format(loop_time), window_capture.screenshot)
+        print('Screenshot taken.')
+    elif key == ord('d'):
+        cv2.imwrite('copperMines/negative/{}.jpg'.format(loop_time), window_capture.screenshot)
+        print('Screenshot taken.')
 
 print('Peacefully closing the app.')
