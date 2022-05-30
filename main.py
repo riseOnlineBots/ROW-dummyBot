@@ -74,7 +74,7 @@ while True:
         rectangles = object_detection.find_character_info(window_capture.screenshot)
         positions = vision_object.get_click_points(rectangles)
 
-        detection_image = vision_object.draw_rectangles(window_capture.screenshot, rectangles)
+        detection_image = vision_object.draw_rectangles(window_capture.screenshot, rectangles, (155, 155, 155))
 
         # Displays the image.
         cv2.imshow('Matches', window_capture.screenshot)

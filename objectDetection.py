@@ -1,5 +1,6 @@
 import cv2 as cv
 import numpy as np
+import pytesseract
 
 
 class ObjectDetection:
@@ -11,9 +12,14 @@ class ObjectDetection:
     match_template_method = cv.TM_CCOEFF_NORMED
 
     def __init__(self):
-        self.character_info = cv.imread('character_info.jpg', self.image_flag_method)
+        self.character_info = cv.imread('images/character_info.jpg', self.image_flag_method)
         self.character_info_w = self.character_info.shape[1]
         self.character_info_h = self.character_info.shape[0]
+
+        # config = '-l eng --oem 1 --psm 3'
+        # text = pytesseract.image_to_string(q, config=config)
+
+        # print(text)
 
     def find_character_info(self, screenshot):
         result = cv.matchTemplate(screenshot, self.character_info, self.match_template_method)

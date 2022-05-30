@@ -20,9 +20,9 @@ class Vision:
 
     # given a list of [x, y, w, h] rectangles and a canvas image to draw on, return an image with
     # all of those rectangles drawn
-    def draw_rectangles(self, haystack_img, rectangles):
+    def draw_rectangles(self, haystack_img, rectangles, color = None):
         # these colors are actually BGR
-        line_color = (0, 255, 0)
+        line_color = color if color else (0, 255, 0)
         line_type = cv.LINE_4
 
         for (x, y, w, h) in rectangles:
