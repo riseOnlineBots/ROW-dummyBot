@@ -1,8 +1,10 @@
 # import os
 import os
+import re
 from time import time
 
 import cv2
+import pytesseract
 
 from bot import RiseOnlineBot, BotState
 from detection import Detection
@@ -11,6 +13,9 @@ from vision import Vision
 from windowcapture import WindowCapture
 
 DEBUG = True
+
+# Initializes the path for the tesseract cmd.
+pytesseract.pytesseract.tesseract_cmd = r'tesseract\tesseract.exe'
 
 # Changes the directory portion.
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -73,11 +78,22 @@ while True:
 
         rectangles = object_detection.find_character_info(window_capture.screenshot)
         positions = vision_object.get_click_points(rectangles)
+        x, y, w, h = rectangles[0]
+        x = x+140
+        w = w-230
+        y = y+25
+        h = h-50
+        info = window_capture.screenshot[y:y + h, x:x + w]
+        cv2.imshow('bar', info)
+        config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789/'
+        text = pytesseract.image_to_string(info, config=config)
+
+        print(text)
 
         detection_image = vision_object.draw_rectangles(window_capture.screenshot, rectangles, (155, 155, 155))
 
         # Displays the image.
-        cv2.imshow('Matches', window_capture.screenshot)
+        # cv2.imshow('Matches', window_capture.screenshot)
 
     loop_time = time()
     key = cv2.waitKey(1) & 0xFF  # Waits 1ms every loop to process key presses.

@@ -18,34 +18,34 @@ class Vision:
 
         return points
 
-    # given a list of [x, y, w, h] rectangles and a canvas image to draw on, return an image with
-    # all of those rectangles drawn
-    def draw_rectangles(self, haystack_img, rectangles, color = None):
-        # these colors are actually BGR
+    # Given a list of [x, y, w, h] rectangles and a canvas image to draw on, return an image with
+    # all of those rectangles drawn.
+    def draw_rectangles(self, img, rectangles, color = None):
+        # These colors are actually BGR.
         line_color = color if color else (0, 255, 0)
         line_type = cv.LINE_4
 
         for (x, y, w, h) in rectangles:
-            # determine the box positions
+            # Determines the box positions.
             top_left = (x, y)
             bottom_right = (x + w, y + h)
-            # draw the box
-            cv.rectangle(haystack_img, top_left, bottom_right, line_color, lineType=line_type)
+            # Draws the box.
+            cv.rectangle(img, top_left, bottom_right, line_color, lineType=line_type)
 
-        return haystack_img
+        return img
 
     # given a list of [x, y] positions and a canvas image to draw on, return an image with all
-    # of those click points drawn on as crosshairs
-    def draw_crosshairs(self, haystack_img, points):
+    # of those click points drawn on as a crosshair.
+    def draw_crosshairs(self, img, points):
         # these colors are actually BGR
         marker_color = (255, 0, 255)
         marker_type = cv.MARKER_CROSS
 
         for (center_x, center_y) in points:
             # draw the center point
-            cv.drawMarker(haystack_img, (center_x, center_y), marker_color, marker_type)
+            cv.drawMarker(img, (center_x, center_y), marker_color, marker_type)
 
-        return haystack_img
+        return img
 
     def centeroid(self, point_list):
         point_list = np.asarray(point_list, dtype=np.int32)
