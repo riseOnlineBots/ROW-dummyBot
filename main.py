@@ -1,6 +1,5 @@
 # import os
 import os
-import re
 from time import time
 
 import cv2
@@ -75,22 +74,36 @@ while True:
     if DEBUG:
         # Draws the detection results onto the original image.
         # detection_image = vision_object.draw_rectangles(window_capture.screenshot, detector.rectangles)
+        rectangles = (0, 0, 0, 0)
+        if object_detection.character_hp_mp_bar_set:
+            rectangles = object_detection.character_hp_mp_bar
+        else:
+            rectangles = object_detection.find_character_info(window_capture.screenshot)
+            object_detection.set_character_hp_mp_bar(rectangles)
 
-        rectangles = object_detection.find_character_info(window_capture.screenshot)
         positions = vision_object.get_click_points(rectangles)
         x, y, w, h = rectangles[0]
-        x = x+140
-        w = w-230
-        y = y+25
-        h = h-50
+        x = x + 30
+        w = w - 130
+        h = h - 1
         info = window_capture.screenshot[y:y + h, x:x + w]
+        info = cv2.cvtColor(info, cv2.COLOR_BGR2GRAY)
+
+        scale_percent = 250
+        width = int(w * scale_percent / 100)
+        height = int(h * scale_percent / 100)
+        dim = (width, height)
+        info = cv2.resize(info, dim, interpolation=cv2.INTER_AREA)
+
         cv2.imshow('bar', info)
-        config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789/'
-        text = pytesseract.image_to_string(info, config=config)
+        config = r'--oem 3 --psm 4 -c tessedit_char_whitelist=0123456789/'
+        text = pytesseract.image_to_string(info, config=config) \
+            .replace('\n', ',')
 
         print(text)
+        print('------')
 
-        detection_image = vision_object.draw_rectangles(window_capture.screenshot, rectangles, (155, 155, 155))
+        # detection_image = vision_object.draw_rectangles(window_capture.screenshot, rectangles, (155, 155, 155))
 
         # Displays the image.
         # cv2.imshow('Matches', window_capture.screenshot)

@@ -6,6 +6,8 @@ class ObjectDetection:
     character_info = None
     character_info_w = 0
     character_info_h = 0
+    character_hp_mp_bar = (0, 0, 0, 0)
+    character_hp_mp_bar_set = False
 
     image_flag_method = cv.IMREAD_UNCHANGED
     match_template_method = cv.TM_CCOEFF_NORMED
@@ -14,6 +16,11 @@ class ObjectDetection:
         self.character_info = cv.imread('images/character_info.jpg', self.image_flag_method)
         self.character_info_w = self.character_info.shape[1]
         self.character_info_h = self.character_info.shape[0]
+
+    def set_character_hp_mp_bar(self, location):
+        self.character_hp_mp_bar = location
+        self.character_hp_mp_bar_set = True
+
 
     def find_character_info(self, screenshot):
         result = cv.matchTemplate(screenshot, self.character_info, self.match_template_method)
