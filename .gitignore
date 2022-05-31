@@ -3,6 +3,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=pycharm,opencv,python,windows
 
 tesseract
+tesseract/**
 
 ### OpenCV ###
 #OpenCV for Mac and Linux
