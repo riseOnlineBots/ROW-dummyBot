@@ -15,7 +15,7 @@ from windowcapture import WindowCapture
 DEBUG = True
 
 # Initializes the path for the tesseract cmd.
-pytesseract.pytesseract.tesseract_cmd = r'tesseract\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 # Changes the directory portion.
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
