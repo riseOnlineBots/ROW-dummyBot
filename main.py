@@ -83,9 +83,9 @@ while True:
 
         positions = vision_object.get_click_points(rectangles)
         x, y, w, h = rectangles[0]
-        x = x + 30
-        w = w - 130
-        h = h - 1
+        # x = x + 30
+        # w = w - 130
+        # h = h - 1
         info = window_capture.screenshot[y:y + h, x:x + w]
         info = cv2.cvtColor(info, cv2.COLOR_BGR2GRAY)
 
