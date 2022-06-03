@@ -3,6 +3,7 @@ import os
 from time import time
 
 import cv2
+import numpy as np
 import pytesseract
 
 from bot import RiseOnlineBot, BotState
@@ -82,31 +83,45 @@ while True:
             object_detection.set_character_hp_mp_bar(rectangles)
 
         positions = vision_object.get_click_points(rectangles)
+
         x, y, w, h = rectangles[0]
-        # x = x + 30
-        # w = w - 130
-        # h = h - 1
-        info = window_capture.screenshot[y:y + h, x:x + w]
-        info = cv2.cvtColor(info, cv2.COLOR_BGR2GRAY)
+        w = w - 140
+        h = h - 9
+        y = y + 5
+        x = x + 60
 
-        scale_percent = 250
-        width = int(w * scale_percent / 100)
-        height = int(h * scale_percent / 100)
-        dim = (width, height)
-        info = cv2.resize(info, dim, interpolation=cv2.INTER_AREA)
+        screenshot = window_capture.screenshot[y:y + h, x:x + w]
+        screenshot = cv2.cvtColor(screenshot, cv2.COLOR_BGR2HSV)
 
-        cv2.imshow('bar', info)
-        config = r'--oem 3 --psm 4 -c tessedit_char_whitelist=0123456789/'
-        text = pytesseract.image_to_string(info, config=config) \
-            .replace('\n', ',')
+        # White
+        lower_white = np.array([0, 0, 0], dtype=np.uint8)
+        upper_white = np.array([0, 0, 255], dtype=np.uint8)
 
-        print(text)
+        mask = cv2.inRange(screenshot, lower_white, upper_white)
+
+        res = cv2.bitwise_and(screenshot, screenshot, mask=mask)
+
+        screenshot = cv2.resize(res, (0, 0), fx=2.5, fy=2.5)
+
+        config = r'--psm 12 --oem 3 -c tessedit_char_whitelist=0123456789/'
+        text = pytesseract.image_to_string(screenshot) \
+            .split('\n')
+        texts = []
+
+        for t in text:
+            if t and t.replace('/', '').isdigit():
+                texts.append(t.strip().replace(' ', ''))
+
+        # cv2.imshow('1', mask)
+        cv2.imshow('2', screenshot)
+
+        print(texts)
         print('------')
 
-        # detection_image = vision_object.draw_rectangles(window_capture.screenshot, rectangles, (155, 155, 155))
+        detection_image = vision_object.draw_rectangles(window_capture.screenshot, rectangles, (155, 155, 155))
 
         # Displays the image.
-        # cv2.imshow('Matches', window_capture.screenshot)
+        # cv2.imshow('Matches', detection_image)
 
     loop_time = time()
     key = cv2.waitKey(1) & 0xFF  # Waits 1ms every loop to process key presses.
@@ -125,3 +140,19 @@ while True:
         print('Screenshot taken.')
 
 print('Peacefully closing the app.')
+
+health = 80.0  # Current Health (float so division doesn't make an int)
+maxHealth = 200  # Max Health
+healthDashes = 20  # Max Displayed dashes
+
+# def do_health():
+#   dashConvert = int(maxHealth/healthDashes)            # Get the number to divide by to convert health to dashes (being 10)
+#   currentDashes = int(health/dashConvert)              # Convert health to dash count: 80/10 => 8 dashes
+#   remainingHealth = healthDashes - currentDashes       # Get the health remaining to fill as space => 12 spaces
+#
+#   healthDisplay = '-' * currentDashes                  # Convert 8 to 8 dashes as a string:   "--------"
+#   remainingDisplay = ' ' * remainingHealth             # Convert 12 to 12 spaces as a string: "            "
+#   percent = str(int((health/maxHealth)*100)) + "%"     # Get the percent as a whole number:   40%
+#
+#   print("|" + healthDisplay + remainingDisplay + "|")  # Print out textbased healthbar
+#   print("         " + percent)                         # Print the percent
