@@ -1,14 +1,13 @@
-# import os
 import os
 from time import time
 
 import cv2
-import numpy as np
 import pytesseract
 
 from bot import RiseOnlineBot, BotState
 from detection import Detection
-from objectDetection import ObjectDetection
+from hsvfilter import HsvFilter
+from mychar import MyChar
 from vision import Vision
 from windowcapture import WindowCapture
 
@@ -30,7 +29,7 @@ detector = Detection('cascade/cascade.xml')
 vision_object = Vision()
 
 # Initializes the object detection
-object_detection = ObjectDetection()
+my_char = MyChar()
 
 # Initializes the bot object.
 bot = RiseOnlineBot((window_capture.offset_x, window_capture.offset_y), (window_capture.w, window_capture.h))
@@ -40,6 +39,20 @@ window_capture.start()
 # bot.start()
 
 loop_time = time()
+
+# vision_object.init_control_gui()
+
+
+def percentage(current, max):
+    if current == max:
+        return 100
+
+    try:
+        return int((abs(max - current) / max) * 100)
+    except ZeroDivisionError:
+        return 0
+
+
 
 while True:
     # Check if there is a screenshot. If not, it won't run the code.
@@ -72,53 +85,9 @@ while True:
         # Nothing is needed while we wait for the mining to finish.
         pass
 
-    if DEBUG:
-        # Draws the detection results onto the original image.
+    # if DEBUG:
         # detection_image = vision_object.draw_rectangles(window_capture.screenshot, detector.rectangles)
-        rectangles = (0, 0, 0, 0)
-        if object_detection.character_hp_mp_bar_set:
-            rectangles = object_detection.character_hp_mp_bar
-        else:
-            rectangles = object_detection.find_character_info(window_capture.screenshot)
-            object_detection.set_character_hp_mp_bar(rectangles)
-
-        positions = vision_object.get_click_points(rectangles)
-
-        x, y, w, h = rectangles[0]
-        w = w - 140
-        h = h - 9
-        y = y + 5
-        x = x + 60
-
-        screenshot = window_capture.screenshot[y:y + h, x:x + w]
-        screenshot = cv2.cvtColor(screenshot, cv2.COLOR_BGR2HSV)
-
-        # White
-        lower_white = np.array([0, 0, 0], dtype=np.uint8)
-        upper_white = np.array([0, 0, 255], dtype=np.uint8)
-
-        mask = cv2.inRange(screenshot, lower_white, upper_white)
-
-        res = cv2.bitwise_and(screenshot, screenshot, mask=mask)
-
-        screenshot = cv2.resize(res, (0, 0), fx=2.5, fy=2.5)
-
-        config = r'--psm 12 --oem 3 -c tessedit_char_whitelist=0123456789/'
-        text = pytesseract.image_to_string(screenshot) \
-            .split('\n')
-        texts = []
-
-        for t in text:
-            if t and t.replace('/', '').isdigit():
-                texts.append(t.strip().replace(' ', ''))
-
-        # cv2.imshow('1', mask)
-        cv2.imshow('2', screenshot)
-
-        print(texts)
-        print('------')
-
-        detection_image = vision_object.draw_rectangles(window_capture.screenshot, rectangles, (155, 155, 155))
+        # detection_image = vision_object.draw_rectangles(window_capture.screenshot, rectangles, (155, 155, 155))
 
         # Displays the image.
         # cv2.imshow('Matches', detection_image)
@@ -132,12 +101,12 @@ while True:
         bot.stop()
         cv2.destroyAllWindows()
         break
-    elif key == ord('f'):
-        cv2.imwrite('copperMines/positive/{}.jpg'.format(loop_time), window_capture.screenshot)
-        print('Screenshot taken.')
-    elif key == ord('d'):
-        cv2.imwrite('copperMines/negative/{}.jpg'.format(loop_time), window_capture.screenshot)
-        print('Screenshot taken.')
+    # elif key == ord('f'):
+    #     cv2.imwrite('copperMines/positive/{}.jpg'.format(loop_time), window_capture.screenshot)
+    #     print('Screenshot taken.')
+    # elif key == ord('d'):
+    #     cv2.imwrite('copperMines/negative/{}.jpg'.format(loop_time), window_capture.screenshot)
+    #     print('Screenshot taken.')
 
 print('Peacefully closing the app.')
 

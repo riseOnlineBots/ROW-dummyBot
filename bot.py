@@ -22,6 +22,10 @@ class RiseOnlineBot:
     IGNORE_RADIUS = 130
     TOOLTIP_MATCH_THRESHOLD = 0.72
 
+    HP_ITEM_COOLDOWN = 2.5  # In seconds.
+    MP_ITEM_COOLDOWN = 2.5  # In seconds.
+    HEAL_MOVEMENT_DURATION = 3  # In seconds.
+
     # threading properties
     stopped = True
     lock = None
@@ -38,6 +42,12 @@ class RiseOnlineBot:
     limestone_tooltip = None
     click_history = []
 
+    hp_item_slot = (3, 1)
+    mp_item_slot = (3, 2)
+    heal_item_slot = (3, 3)
+    buff_item_slot = (2, 3)
+    def_item_slot = (2, 4)
+
     def __init__(self, window_offset, window_size):
         # create a thread lock object
         self.lock = Lock()
@@ -48,9 +58,6 @@ class RiseOnlineBot:
         self.window_offset = window_offset
         self.window_w = window_size[0]
         self.window_h = window_size[1]
-
-        # pre-load the needle image used to confirm our object detection
-        self.limestone_tooltip = cv.imread('copperMines/sandStoneText.jpg', cv.IMREAD_UNCHANGED)
 
         # start bot in the initializing mode to allow us time to get setup.
         # mark the time at which this started so we know when to complete it
