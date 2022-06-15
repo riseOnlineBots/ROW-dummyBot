@@ -42,7 +42,7 @@ class Vision:
     # of those click points drawn on as a crosshair.
     def draw_crosshairs(self, img, points):
         # these colors are actually BGR
-        marker_color = (255, 0, 255)
+        marker_color = (203, 192, 255)
         marker_type = cv.MARKER_CROSS
 
         for (center_x, center_y) in points:

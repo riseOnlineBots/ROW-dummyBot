@@ -6,10 +6,10 @@ import pytesseract
 
 from bot import RiseOnlineBot, BotState
 from detection import Detection
-from hsvfilter import HsvFilter
 from mychar import MyChar
 from vision import Vision
 from windowcapture import WindowCapture
+import pyautogui as py
 
 DEBUG = True
 
@@ -40,6 +40,7 @@ window_capture.start()
 
 loop_time = time()
 
+
 # vision_object.init_control_gui()
 
 
@@ -51,7 +52,6 @@ def percentage(current, max):
         return int((abs(max - current) / max) * 100)
     except ZeroDivisionError:
         return 0
-
 
 
 while True:
@@ -86,11 +86,19 @@ while True:
         pass
 
     # if DEBUG:
-        # detection_image = vision_object.draw_rectangles(window_capture.screenshot, detector.rectangles)
-        # detection_image = vision_object.draw_rectangles(window_capture.screenshot, rectangles, (155, 155, 155))
+    # detection_image = vision_object.draw_rectangles(window_capture.screenshot, detector.rectangles)
+    # detection_image = vision_object.draw_rectangles(window_capture.screenshot, rectangles, (155, 155, 155))
 
-        # Displays the image.
-        # cv2.imshow('Matches', detection_image)
+    # Displays the image.
+    # cv2.imshow('Matches', detection_image)
+
+    screenshot = window_capture.screenshot
+    width = int(window_capture.w / 2)
+    height = int(window_capture.h / 2)
+
+    screenshot = vision_object.draw_crosshairs(screenshot, [(width, height)])
+
+    cv2.imshow("q", screenshot)
 
     loop_time = time()
     key = cv2.waitKey(1) & 0xFF  # Waits 1ms every loop to process key presses.
