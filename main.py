@@ -9,7 +9,6 @@ from detection import Detection
 from mychar import MyChar
 from vision import Vision
 from windowcapture import WindowCapture
-import pyautogui as py
 
 DEBUG = True
 
@@ -20,7 +19,7 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tessera
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # Initializes WindowCapture object.
-window_capture = WindowCapture(None)
+window_capture = WindowCapture("Rise Online Client")
 
 # Loads the detector.
 detector = Detection('cascade/cascade.xml')
@@ -29,7 +28,7 @@ detector = Detection('cascade/cascade.xml')
 vision_object = Vision()
 
 # Initializes the object detection
-my_char = MyChar()
+my_char = MyChar((window_capture.offset_x, window_capture.offset_y), (window_capture.w, window_capture.h))
 
 # Initializes the bot object.
 bot = RiseOnlineBot((window_capture.offset_x, window_capture.offset_y), (window_capture.w, window_capture.h))
@@ -65,6 +64,9 @@ while True:
     # # Gives the detector the current screenshot to search for objects in.
     detector.update(window_capture.screenshot)
 
+    my_char.update_screenshot(window_capture.screenshot)
+    my_char.current_hp_mp()
+
     # Update the bot with the data it needs right now.
     if bot.state == BotState.INITIALIZING:
         # While bot is waiting to start, go ahead and start giving it some targets to work
@@ -92,14 +94,6 @@ while True:
     # Displays the image.
     # cv2.imshow('Matches', detection_image)
 
-    screenshot = window_capture.screenshot
-    width = int(window_capture.w / 2)
-    height = int(window_capture.h / 2)
-
-    screenshot = vision_object.draw_crosshairs(screenshot, [(width, height)])
-
-    cv2.imshow("q", screenshot)
-
     loop_time = time()
     key = cv2.waitKey(1) & 0xFF  # Waits 1ms every loop to process key presses.
 
@@ -117,6 +111,41 @@ while True:
     #     print('Screenshot taken.')
 
 print('Peacefully closing the app.')
+
+
+
+# import cv2
+
+#save the image u linked above
+# gray = cv2.imread("test.webp", 0)
+
+#check the pixels coords you wanna look at under a graphic app
+# bar = gray[33, 92:337]
+
+# print(bar)
+
+# for i, x in enumerate(bar):
+#     if x < 80:
+#         print(f"{(i / len(bar))*100:.1f}%")
+#         break
+
+#it's innacurate by 2% but should be sufficiently
+#accurate for HP potion chugging under 50%
+
+# cv2.imshow("nerd", gray)
+# cv2.waitKey()
+
+
+
+
+
+
+
+
+
+
+
+
 
 health = 80.0  # Current Health (float so division doesn't make an int)
 maxHealth = 200  # Max Health
